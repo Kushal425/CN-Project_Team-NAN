@@ -9,8 +9,11 @@
 [![DNS](https://img.shields.io/badge/DNS-dnsmasq-f59e0b?style=for-the-badge)](.)
 [![Proxy](https://img.shields.io/badge/Proxy-nginx-009639?style=for-the-badge&logo=nginx)](.)
 [![Backends](https://img.shields.io/badge/Backends-2%20×%20Python-3776ab?style=for-the-badge&logo=python)](.)
-
 </div>
+
+<p align="center">
+  <img src="docs/NAN%20Private%20Network%20Architecture%20Mind%20Map.png" alt="NAN Private Network Architecture Mind Map" width="100%" />
+</p>
 
 ---
 
