@@ -1,0 +1,10 @@
+# TLS private keys
+*.key
+
+# Private certificate authority keys
+ca.key
+ca-private.key
+*.key.pem
+
+# macOS
+.DS_Store
