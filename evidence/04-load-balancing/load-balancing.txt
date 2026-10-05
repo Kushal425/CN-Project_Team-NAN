@@ -1,0 +1,15 @@
+=== NGINX LOAD BALANCING TEST ===
+Target: https://app.NAN.test/
+
+Request 1: X-Backend: B
+Request 2: X-Backend: A
+Request 3: X-Backend: B
+Request 4: X-Backend: A
+Request 5: X-Backend: B
+Request 6: X-Backend: A
+Request 7: X-Backend: B
+Request 8: X-Backend: A
+Request 9: X-Backend: B
+Request 10: X-Backend: A
+Request 11: X-Backend: B
+Request 12: X-Backend: A

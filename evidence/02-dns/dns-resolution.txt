@@ -1,0 +1,43 @@
+=== DNS: app.NAN.test ===
+
+; <<>> DiG 9.10.6 <<>> app.NAN.test
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 6248
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;app.NAN.test.			IN	A
+
+;; ANSWER SECTION:
+app.NAN.test.		0	IN	A	10.7.29.219
+
+;; Query time: 47 msec
+;; SERVER: 10.7.3.114#53(10.7.3.114)
+;; WHEN: Mon Oct 05 17:31:14 IST 2026
+;; MSG SIZE  rcvd: 57
+
+
+=== DNS: api.NAN.test ===
+
+; <<>> DiG 9.10.6 <<>> api.NAN.test
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 6835
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;api.NAN.test.			IN	A
+
+;; ANSWER SECTION:
+api.NAN.test.		0	IN	A	10.7.29.219
+
+;; Query time: 7 msec
+;; SERVER: 10.7.3.114#53(10.7.3.114)
+;; WHEN: Mon Oct 05 17:31:14 IST 2026
+;; MSG SIZE  rcvd: 57
+

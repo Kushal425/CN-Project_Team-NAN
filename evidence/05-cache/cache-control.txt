@@ -1,0 +1,23 @@
+=== HTTP CACHE-CONTROL TEST ===
+Target: https://api.NAN.test/api/status
+
+HTTP/1.1 200 OK
+Server: nginx/1.31.6
+Date: Mon, 05 Oct 2026 12:09:30 GMT
+Content-Type: text/plain
+Content-Length: 21
+Connection: keep-alive
+Cache-Control: max-age=60
+X-Backend: B
+
+
+=== Second Request ===
+HTTP/1.1 200 OK
+Server: nginx/1.31.6
+Date: Mon, 05 Oct 2026 12:09:30 GMT
+Content-Type: text/plain
+Content-Length: 21
+Connection: keep-alive
+Cache-Control: max-age=60
+X-Backend: A
+
