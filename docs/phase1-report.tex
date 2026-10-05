@@ -1,0 +1,822 @@
+\documentclass[12pt,a4paper]{article}
+
+% ─── Packages ────────────────────────────────────────────────────────────────
+\usepackage[top=2.5cm,bottom=2.5cm,left=3cm,right=3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{fontenc}
+\usepackage{inputenc}
+\usepackage{lmodern}
+\usepackage{parskip}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{mdframed}
+
+\tcbuselibrary{skins,breakable}
+
+% ─── Colours ─────────────────────────────────────────────────────────────────
+\definecolor{nanblue}{RGB}{30,64,175}
+\definecolor{nangreen}{RGB}{22,101,52}
+\definecolor{nanorange}{RGB}{154,52,18}
+\definecolor{nangray}{RGB}{75,85,99}
+\definecolor{codebg}{RGB}{243,244,246}
+\definecolor{codefg}{RGB}{17,24,39}
+\definecolor{borderblue}{RGB}{147,197,253}
+\definecolor{lightblue}{RGB}{239,246,255}
+\definecolor{lightyellow}{RGB}{254,252,232}
+\definecolor{lightred}{RGB}{254,242,242}
+\definecolor{lightgreen}{RGB}{240,253,244}
+
+% ─── Hyperref ────────────────────────────────────────────────────────────────
+\hypersetup{
+    colorlinks=true,
+    linkcolor=nanblue,
+    urlcolor=nanblue,
+    citecolor=nanblue,
+    pdfauthor={Team NAN},
+    pdftitle={NAN -- Computer Networks Phase 1 Report},
+    pdfsubject={Computer Networks},
+}
+
+% ─── Header / Footer ─────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{nangray}{NAN --- Computer Networks Phase 1}}
+\fancyhead[R]{\small\textcolor{nangray}{\thepage}}
+\fancyfoot[C]{\small\textcolor{nangray}{Team NAN $\cdot$ Lakshya $\cdot$ Kushal $\cdot$ Chinmay $\cdot$ Prachee}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ─── Section Formatting ──────────────────────────────────────────────────────
+\titleformat{\section}
+  {\Large\bfseries\color{nanblue}}
+  {\thesection}{1em}{}[\textcolor{nanblue}{\rule{\linewidth}{0.5pt}}]
+
+\titleformat{\subsection}
+  {\large\bfseries\color{nangray}}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{nangray}}
+  {\thesubsubsection}{1em}{}
+
+% ─── Code Listing Style ───────────────────────────────────────────────────────
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize\color{codefg},
+    breaklines=true,
+    breakatwhitespace=true,
+    frame=single,
+    framesep=4pt,
+    rulecolor=\color{borderblue},
+    xleftmargin=8pt,
+    xrightmargin=8pt,
+    aboveskip=8pt,
+    belowskip=8pt,
+    showstringspaces=false,
+    tabsize=4,
+    keywordstyle=\color{nanblue}\bfseries,
+    commentstyle=\color{nangreen}\itshape,
+    stringstyle=\color{nanorange},
+}
+
+% ─── Custom Boxes ─────────────────────────────────────────────────────────────
+\newtcolorbox{infobox}[1][]{
+  colback=lightblue, colframe=nanblue,
+  fonttitle=\bfseries\color{nanblue},
+  title={#1}, breakable
+}
+
+\newtcolorbox{successbox}[1][]{
+  colback=lightgreen, colframe=nangreen,
+  fonttitle=\bfseries\color{nangreen},
+  title={#1}, breakable
+}
+
+\newtcolorbox{warningbox}[1][]{
+  colback=lightyellow, colframe=nanorange,
+  fonttitle=\bfseries\color{nanorange},
+  title={#1}, breakable
+}
+
+% ─── Title Page ──────────────────────────────────────────────────────────────
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{1.5cm}
+
+  {\Huge\bfseries\color{nanblue} NAN}\\[0.4cm]
+  {\Large\bfseries\color{nangray} Private Network Service Platform}\\[0.2cm]
+  {\large Computer Networks --- Phase 1 Report}
+
+  \vspace{1cm}
+  \textcolor{nanblue}{\rule{0.6\linewidth}{1.5pt}}
+  \vspace{1cm}
+
+  \begin{center}
+    \begin{tabular}{ll}
+      \toprule
+      \textbf{Role} & \textbf{Team Member} \\
+      \midrule
+      DNS Server (Mac 1) & Lakshya \\
+      Nginx Gateway (Mac 2) & Kushal \\
+      Backend A (Mac 3) & Chinmay \\
+      Backend B (Mac 4) & Prachee \\
+      \bottomrule
+    \end{tabular}
+  \end{center}
+
+  \vspace{1.2cm}
+  {\large\textbf{Course:} Computer Networks}\\[0.2cm]
+  {\large\textbf{Team:} NAN}\\[0.2cm]
+  {\large\textbf{Phase:} 1 --- Build \& Observe}\\[0.2cm]
+  {\large\textbf{Date:} October 2026}
+
+  \vfill
+
+  \begin{infobox}[Core Principle]
+    \textit{``The application stays simple --- the network is the project.''}\\[0.3em]
+    A client types a private domain name. It resolves through a team-owned DNS server,
+    connects over HTTPS through a reverse proxy, and receives a response from one of
+    two backend servers. Every packet is captured and explained.
+  \end{infobox}
+
+\end{titlepage}
+
+% ─── Table of Contents ───────────────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Project Overview}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Objective}
+
+The NAN project builds a fully local, four-machine distributed service platform running on a private Wi-Fi LAN --- no cloud, no pre-configured servers. The goal is to demonstrate, measure, and explain every layer of a real network request: from DNS resolution, through TCP and TLS handshake, to HTTP load balancing and application response.
+
+\subsection{Team and Machine Roles}
+
+Each physical machine takes a dedicated network role. The table below maps each team member to their machine's responsibility and the software they operate.
+
+\begin{table}[h!]
+\centering
+\caption{Team Machine Roles and IP Addresses}
+\begin{tabular}{llllll}
+\toprule
+\textbf{Machine} & \textbf{Role} & \textbf{Member} & \textbf{IP Address} & \textbf{Port(s)} & \textbf{Software} \\
+\midrule
+Mac 1 & DNS Server & Lakshya & \texttt{10.7.3.114} & 53 & dnsmasq \\
+Mac 2 & Nginx Gateway & Kushal & \texttt{10.7.29.219} & 443, 8080 & nginx + TLS \\
+Mac 3 & Backend A & Chinmay & \texttt{10.7.20.70} & 3001 & Python HTTP \\
+Mac 4 & Backend B & Prachee & \texttt{10.7.0.210} & 3002 & Python HTTP \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{DNS Records}
+
+Two private domain names were configured, both resolving to the Nginx gateway:
+
+\begin{lstlisting}
+app.NAN.test  ->  10.7.29.219   (Nginx Gateway)
+api.NAN.test  ->  10.7.29.219   (Nginx Gateway)
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Network Architecture}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Topology}
+
+All four machines connect to the same private Wi-Fi access point. There is no cloud component --- the entire network runs locally on the team's laptops.
+
+\begin{figure}[h!]
+\centering
+\begin{mdframed}[backgroundcolor=codebg,linecolor=borderblue]
+\begin{verbatim}
+              Wi-Fi / LAN (private, ~10.7.0.0/16)
+                           |
+    +------------+---------+-----------+-----------+
+    |            |                     |           |
+    v            v                     v           v
+[Router]   [DNS Server]         [Nginx Gateway] [Backend A] [Backend B]
+           Lakshya              Kushal           Chinmay     Prachee
+           10.7.3.114           10.7.29.219      10.7.20.70  10.7.0.210
+           Port 53              Port 443/8080    Port 3001   Port 3002
+           dnsmasq              nginx + TLS      Python      Python
+\end{verbatim}
+\end{mdframed}
+\caption{Physical network topology}
+\end{figure}
+
+\subsection{Cloud Architecture Equivalents}
+
+\begin{table}[h!]
+\centering
+\caption{Local components mapped to cloud equivalents}
+\begin{tabular}{lll}
+\toprule
+\textbf{Local Component} & \textbf{AWS Equivalent} & \textbf{GCP Equivalent} \\
+\midrule
+dnsmasq on Mac 1 & Route 53 Private Hosted Zone & Cloud DNS \\
+Nginx on Mac 2 & Application Load Balancer & HTTP(S) Load Balancer \\
+Backend A on Mac 3 & EC2 Instance & Compute Engine VM \\
+Backend B on Mac 4 & EC2 Instance & Compute Engine VM \\
+Private LAN & VPC & VPC Network \\
+Self-signed CA & AWS Certificate Manager & GCP Certificate Manager \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task A --- LAN Setup}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Overview}
+
+All four team machines were connected to the same private Wi-Fi network. Connectivity was verified by direct HTTP access from the gateway machine (Kushal, Mac 2) to both backend machines (Chinmay, Prachee).
+
+\subsection{Evidence --- Direct Backend Access}
+
+\begin{lstlisting}
+=== Backend A ===
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.14.2
+Content-Type: text/plain
+Content-Length: 21
+Cache-Control: max-age=60
+X-Backend: A
+
+Backend A is healthy
+
+=== Backend B ===
+HTTP/1.0 200 OK
+Server: BaseHTTP/0.6 Python/3.14.7
+Content-Type: text/plain
+Content-Length: 21
+Cache-Control: max-age=60
+X-Backend: B
+
+Backend B is healthy
+\end{lstlisting}
+
+\begin{successbox}[Result]
+Direct HTTP connectivity from Mac 2 to both Mac 3 (\texttt{10.7.20.70:3001}) and Mac 4 (\texttt{10.7.0.210:3002}) confirmed. Both backends returned \texttt{200 OK} with the correct \texttt{X-Backend} identifier.
+\end{successbox}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task B --- Private DNS Server}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Configuration}
+
+dnsmasq was installed on Lakshya's machine (Mac 1, \texttt{10.7.3.114}) and configured to resolve the \texttt{.NAN.test} zone while forwarding all other queries to public resolvers (8.8.8.8, 1.1.1.1), preserving normal internet connectivity.
+
+\begin{lstlisting}[language=bash, caption=dns/dnsmasq.conf]
+port=53
+listen-address=10.7.3.114
+bind-interfaces
+
+# NAN project DNS records
+address=/app.NAN.test/10.7.29.219
+address=/api.NAN.test/10.7.29.219
+
+# Forward external DNS to public resolvers
+server=8.8.8.8
+server=1.1.1.1
+
+log-queries
+log-facility=-
+\end{lstlisting}
+
+\subsection{Evidence --- DNS Resolution}
+
+\begin{lstlisting}[caption=dig output for app.NAN.test]
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 6248
+
+;; QUESTION SECTION:
+;app.NAN.test.      IN  A
+
+;; ANSWER SECTION:
+app.NAN.test.  0   IN  A   10.7.29.219
+
+;; SERVER: 10.7.3.114#53(10.7.3.114)
+;; MSG SIZE rcvd: 57
+\end{lstlisting}
+
+\begin{lstlisting}[caption=dig output for api.NAN.test]
+;; ANSWER SECTION:
+api.NAN.test.  0   IN  A   10.7.29.219
+
+;; SERVER: 10.7.3.114#53(10.7.3.114)
+\end{lstlisting}
+
+\begin{successbox}[Result]
+Both \texttt{app.NAN.test} and \texttt{api.NAN.test} resolve to \texttt{10.7.29.219} (the Nginx gateway) using the team's private DNS server at \texttt{10.7.3.114:53}. Status: \texttt{NOERROR}. Response is authoritative (\texttt{aa} flag set).
+\end{successbox}
+
+\subsection{DNS vs.\ IP Layer Distinction}
+
+A key conceptual point demonstrated: DNS resolution and TCP/IP connectivity are independent layers.
+
+\begin{table}[h!]
+\centering
+\caption{Layer independence demonstrated through DNS failure scenarios}
+\begin{tabular}{lll}
+\toprule
+\textbf{Condition} & \textbf{DNS Result} & \textbf{TCP/IP Result} \\
+\midrule
+Correct DNS configured & Resolves correctly & Connection succeeds \\
+Wrong DNS configured & Fails to resolve & Direct IP still reachable \\
+DNS record wrong IP & Resolves (wrong IP) & Connection to wrong host \\
+DNS server offline & Name lookup fails & Direct IP still reachable \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task C --- Backend Services}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Design}
+
+Two minimal Python HTTP servers were built. Both bind to \texttt{0.0.0.0} so they are reachable from all machines on the LAN. Each exposes two endpoints and identifies itself in every response via the \texttt{X-Backend} header.
+
+\begin{table}[h!]
+\centering
+\caption{Backend API endpoints}
+\begin{tabular}{lll}
+\toprule
+\textbf{Endpoint} & \textbf{Response Body} & \textbf{Headers} \\
+\midrule
+\texttt{GET /} & \texttt{Backend A} / \texttt{Backend B} & \texttt{X-Backend: A} or \texttt{B} \\
+\texttt{GET /api/status} & \texttt{Backend A is healthy} & \texttt{X-Backend: A}, \texttt{Cache-Control: max-age=60} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Source Code --- Backend A}
+
+\begin{lstlisting}[language=Python, caption=backends/backend-a/server.py]
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+HOST = "0.0.0.0"
+PORT = 3001
+BACKEND = "A"
+
+class Handler(BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        if self.path == "/api/status":
+            body = f"Backend {BACKEND} is healthy\n".encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "max-age=60")
+            self.send_header("X-Backend", BACKEND)
+            self.end_headers()
+            self.wfile.write(body)
+        else:
+            body = f"Backend {BACKEND}\n".encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("X-Backend", BACKEND)
+            self.end_headers()
+            self.wfile.write(body)
+
+server = HTTPServer((HOST, PORT), Handler)
+print(f"Backend {BACKEND} listening on {HOST}:{PORT}")
+server.serve_forever()
+\end{lstlisting}
+
+Backend B is identical with \texttt{BACKEND = "B"} and \texttt{PORT = 3002}.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task D --- Nginx Reverse Proxy and Load Balancer}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Configuration}
+
+Nginx on Mac 2 (\texttt{10.7.29.219}) acts as the single entry point. Clients never connect directly to backend IPs. Round-robin load balancing distributes requests across both backends.
+
+\begin{lstlisting}[caption=nginx/nan.conf (abridged)]
+upstream nan_backends {
+    server 10.7.20.70:3001;   # Backend A - Chinmay
+    server 10.7.0.210:3002;   # Backend B - Prachee
+}
+
+server {
+    listen 443 ssl;
+    server_name app.NAN.test api.NAN.test;
+
+    ssl_certificate     /opt/homebrew/etc/nginx/nan-server.crt;
+    ssl_certificate_key /opt/homebrew/etc/nginx/nan-server.key;
+
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+
+    location / {
+        proxy_pass http://nan_backends;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_next_upstream error timeout http_502;
+    }
+}
+\end{lstlisting}
+
+\subsection{Traffic Path}
+
+\begin{figure}[h!]
+\centering
+\begin{mdframed}[backgroundcolor=codebg,linecolor=borderblue]
+\begin{verbatim}
+Client
+  |
+  |  HTTPS  app.NAN.test:443
+  v
+Nginx Gateway  10.7.29.219:443
+  |
+  |  Round-Robin  (plain HTTP on LAN)
+  |
+  +----[odd]----->  Backend A  10.7.20.70:3001
+  |
+  +----[even]---->  Backend B  10.7.0.210:3002
+\end{verbatim}
+\end{mdframed}
+\caption{Request routing through Nginx to backends}
+\end{figure}
+
+\subsection{Evidence --- Load Balancing}
+
+Twelve consecutive HTTPS requests to \texttt{app.NAN.test} produced the following pattern:
+
+\begin{lstlisting}
+Request 1:  X-Backend: B        Request  7:  X-Backend: B
+Request 2:  X-Backend: A        Request  8:  X-Backend: A
+Request 3:  X-Backend: B        Request  9:  X-Backend: B
+Request 4:  X-Backend: A        Request 10:  X-Backend: A
+Request 5:  X-Backend: B        Request 11:  X-Backend: B
+Request 6:  X-Backend: A        Request 12:  X-Backend: A
+\end{lstlisting}
+
+\begin{successbox}[Result]
+Perfect round-robin distribution: Backend B served odd requests, Backend A served even requests, alternating across all 12 requests without interruption.
+\end{successbox}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task E --- HTTPS and TLS}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Certificate Authority Setup}
+
+A local private Certificate Authority named \textbf{NAN Local CA} was created using OpenSSL. The CA certificate was distributed to all client machines and added to the macOS system trust store, enabling certificate verification without the \texttt{-k} flag.
+
+\begin{lstlisting}[language=bash, caption=Adding NAN Local CA to macOS trust store]
+sudo security add-trusted-cert -d -r trustRoot \
+    -k /Library/Keychains/System.keychain nan-ca.crt
+\end{lstlisting}
+
+\subsection{Server Certificate}
+
+\begin{table}[h!]
+\centering
+\caption{Server certificate properties}
+\begin{tabular}{ll}
+\toprule
+\textbf{Property} & \textbf{Value} \\
+\midrule
+Subject (CN) & \texttt{app.NAN.test} \\
+Issuer & \texttt{NAN Local CA} \\
+Organisation & \texttt{NAN} \\
+Country / State / City & IN / West Bengal / Kolkata \\
+Valid From & Oct 4, 2026 \\
+Valid Until & Oct 4, 2027 \\
+TLS Version & TLSv1.3 \\
+Cipher Suite & \texttt{AEAD-CHACHA20-POLY1305-SHA256} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{TLS Termination Architecture}
+
+TLS is terminated at Nginx. Backend communication uses plain HTTP on the trusted private LAN.
+
+\begin{figure}[h!]
+\centering
+\begin{mdframed}[backgroundcolor=codebg,linecolor=borderblue]
+\begin{verbatim}
+Client <------ TLS 1.3 encrypted ------> Nginx (10.7.29.219:443)
+                                               |
+                                      plain HTTP on LAN
+                                               |
+                                 +-------------+-------------+
+                           Backend A                   Backend B
+                        10.7.20.70:3001             10.7.0.210:3002
+\end{verbatim}
+\end{mdframed}
+\caption{TLS termination at Nginx edge}
+\end{figure}
+
+\subsection{TLS Handshake Observed}
+
+The \texttt{curl -v} output captured the complete TLS 1.3 handshake:
+
+\begin{lstlisting}
+* (OUT), TLS handshake, Client hello (1)
+* (IN),  TLS handshake, Server hello (2)
+* (IN),  TLS handshake, Unknown (8)       <- TLS 1.3 extensions
+* (IN),  TLS handshake, Certificate (11)
+* (IN),  TLS handshake, CERT verify (15)
+* (IN),  TLS handshake, Finished (20)
+* (OUT), TLS handshake, Finished (20)
+* SSL connection using TLSv1.3 / AEAD-CHACHA20-POLY1305-SHA256
+* SSL certificate verify ok.
+\end{lstlisting}
+
+\begin{table}[h!]
+\centering
+\caption{TLS 1.3 handshake message sequence}
+\begin{tabular}{lll}
+\toprule
+\textbf{Message} & \textbf{Direction} & \textbf{Purpose} \\
+\midrule
+ClientHello & Client $\rightarrow$ Server & Advertises TLS versions, ciphers, SNI \\
+ServerHello & Server $\rightarrow$ Client & Selects TLS 1.3, CHACHA20 cipher \\
+Certificate & Server $\rightarrow$ Client & Sends \texttt{nan-server.crt} \\
+CertVerify & Server $\rightarrow$ Client & Proves possession of private key \\
+Finished & Both directions & Confirms handshake; session keys active \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+After \textit{Finished}, all application data is encrypted. HTTP payload is not visible in Wireshark --- only opaque TLS Application Data records appear.
+
+\begin{successbox}[Result]
+HTTPS established without certificate warnings. \texttt{SSL certificate verify ok.} confirmed by curl. TLS 1.3 with CHACHA20-POLY1305 cipher in use.
+\end{successbox}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task F --- HTTP Caching}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Implementation}
+
+The \texttt{/api/status} endpoint includes a \texttt{Cache-Control: max-age=60} header in every response. This instructs clients and intermediate caches to treat the response as fresh for 60 seconds.
+
+\subsection{Evidence}
+
+\begin{lstlisting}[caption=curl -sI https://api.NAN.test/api/status]
+HTTP/1.1 200 OK
+Server: nginx/1.31.6
+Content-Type: text/plain
+Content-Length: 21
+Connection: keep-alive
+Cache-Control: max-age=60
+X-Backend: B
+\end{lstlisting}
+
+\subsection{Cache Behaviour Explained}
+
+\begin{table}[h!]
+\centering
+\caption{HTTP cache states}
+\begin{tabular}{lp{5.5cm}l}
+\toprule
+\textbf{State} & \textbf{Behaviour} & \textbf{HTTP Status} \\
+\midrule
+Fresh hit & Response served from local cache; no network request made & (none) \\
+Conditional request & Client re-validates with \texttt{If-None-Match} or \texttt{If-Modified-Since} & \texttt{304 Not Modified} \\
+Full new request & Cache expired or flushed; complete round-trip to backend & \texttt{200 OK} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Task G --- Complete Protocol Flow Capture}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{OSI Layer Mapping}
+
+Every layer of the OSI model is exercised in a single client request:
+
+\begin{table}[h!]
+\centering
+\caption{OSI layer mapping for the NAN request}
+\begin{tabular}{cllp{5cm}}
+\toprule
+\textbf{Layer} & \textbf{Name} & \textbf{Protocol} & \textbf{Where / What} \\
+\midrule
+7 & Application & DNS, HTTP/1.1 & dnsmasq, Python backends, nginx \\
+6 & Presentation & TLS 1.3 & Nginx: encrypts/decrypts \\
+5 & Session & TLS session & Key exchange, cipher negotiation \\
+4 & Transport & TCP (443, 3001, 3002) / UDP (53) & All machines \\
+3 & Network & IPv4 (\texttt{10.7.x.x}) & Wi-Fi LAN routing \\
+2 & Data Link & 802.11 Wi-Fi frames & NIC on each machine \\
+1 & Physical & Wi-Fi radio signal & Access point \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Port Identification}
+
+\begin{table}[h!]
+\centering
+\caption{Ports and socket pairs in a single request}
+\begin{tabular}{lllll}
+\toprule
+\textbf{Traffic} & \textbf{Protocol} & \textbf{Src Port} & \textbf{Dst Port} & \textbf{Machine} \\
+\midrule
+DNS query & UDP & Ephemeral & 53 & Client $\rightarrow$ Mac 1 \\
+DNS response & UDP & 53 & Ephemeral & Mac 1 $\rightarrow$ Client \\
+HTTPS & TCP & Ephemeral & 443 & Client $\rightarrow$ Mac 2 \\
+Proxy to Backend A & TCP & Ephemeral & 3001 & Mac 2 $\rightarrow$ Mac 3 \\
+Proxy to Backend B & TCP & Ephemeral & 3002 & Mac 2 $\rightarrow$ Mac 4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Wireshark Captures}
+
+\begin{table}[h!]
+\centering
+\caption{Wireshark capture files}
+\begin{tabular}{ll}
+\toprule
+\textbf{File} & \textbf{Contents} \\
+\midrule
+\texttt{NAN-phase1-dns-capture.pcapng} & DNS query/response for \texttt{app.NAN.test} \\
+\texttt{NAN\_phase1\_baseline\_traffic.pcapng} & Full system: DNS + TCP + TLS + HTTP \\
+\texttt{NAN\_phase1\_backend\_failure\_failover.pcapng} & Backend A down, failover to B \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Key Wireshark filters used during analysis:}
+
+\begin{lstlisting}[language=bash]
+dns                         # DNS query and response packets
+tcp.flags.syn == 1          # TCP three-way handshake
+tls.handshake               # TLS ClientHello, ServerHello, Certificate
+tcp.port == 443             # All HTTPS traffic
+tcp.flags.reset == 1        # TCP RST (connection refused)
+ip.addr == 10.7.3.114       # DNS server traffic
+\end{lstlisting}
+
+\subsection{TCP Three-Way Handshake}
+
+Observed in the Wireshark baseline capture (\texttt{tcp.flags.syn == 1 \&\& tcp.port == 443}):
+
+\begin{lstlisting}
+Client        -->  [SYN]      seq=X             --> 10.7.29.219:443
+10.7.29.219   -->  [SYN-ACK]  seq=Y, ack=X+1   --> Client
+Client        -->  [ACK]      ack=Y+1            --> 10.7.29.219:443
+\end{lstlisting}
+
+The handshake completes before any TLS or application data is transmitted, confirming TCP's reliable, connection-oriented nature.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Phase 1 Failure Demonstrations}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{table}[h!]
+\centering
+\caption{Phase 1 mandatory failure scenarios}
+\begin{tabular}{p{4cm}p{4.5cm}p{4cm}}
+\toprule
+\textbf{Failure Injected} & \textbf{Observed Behaviour} & \textbf{Layer Affected} \\
+\midrule
+Wrong DNS resolver on client & Name resolution fails; direct IP still reachable & Application (DNS, L7) \\
+DNS record points to wrong IP & DNS succeeds; TCP connection reaches wrong host & Network (L3) \\
+One backend stopped & Nginx routes all traffic to remaining backend & Application upstream \\
+Both backends stopped & Nginx returns \texttt{502 Bad Gateway} & Application upstream \\
+Wrong destination port & TCP \texttt{Connection refused}; host reachable & Transport (TCP, L4) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Backend Failover --- Detailed}
+
+When Backend A (Mac 3) was stopped:
+
+\begin{lstlisting}
+Before failure:  X-Backend: A, B, A, B, A, B ...
+After Backend A stopped:  X-Backend: B, B, B, B, B ...
+After Backend A restarted:  X-Backend: A, B, A, B ...
+\end{lstlisting}
+
+Nginx's passive health check (\texttt{proxy\_next\_upstream error timeout}) detected the TCP connection failure to \texttt{10.7.20.70:3001} and automatically routed subsequent requests to \texttt{10.7.0.210:3002} (Backend B). The client received no errors during the failover.
+
+\subsection{502 Bad Gateway}
+
+When both backends were stopped simultaneously, Nginx returned:
+
+\begin{lstlisting}
+HTTP/1.1 502 Bad Gateway
+Server: nginx/1.31.6
+\end{lstlisting}
+
+This confirms the boundary between the edge proxy layer and the application backend layer: the TLS handshake still succeeds (Nginx is reachable), but the upstream HTTP connection cannot be established.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Security Notes}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{warningbox}[Private Key Handling]
+The following files contain private cryptographic material and are \textbf{not committed} to the repository. They reside only on the gateway machine:
+\begin{itemize}
+  \item \texttt{nan-server.key} --- Nginx TLS private key
+  \item \texttt{nan-ca.key} --- NAN Local CA private key
+\end{itemize}
+A \texttt{.gitignore} rule (\texttt{*.key}, \texttt{*.pem}) prevents accidental commit.
+\end{warningbox}
+
+Only the public server certificate (\texttt{tls/nan-server.crt}) and public CA certificate are distributed and committed.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Project File Structure}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{lstlisting}
+cn-phase1/
+|-- README.md
+|-- architecture/
+|   |-- topology.md          Network diagram, IP table, cloud equivalents
+|   `-- request-flow.md      Step-by-step protocol flow, OSI mapping
+|-- backends/
+|   |-- backend-a/
+|   |   `-- server.py        Backend A (port 3001)
+|   `-- backend-b/
+|       `-- server.py        Backend B (port 3002)
+|-- dns/
+|   `-- dnsmasq.conf         dnsmasq config with .NAN.test records
+|-- nginx/
+|   `-- nan.conf             Reverse proxy, load balancer, TLS config
+|-- tls/
+|   |-- README.md            TLS setup, CA details, trust store
+|   `-- nan-server.crt       Public server certificate
+|-- scripts/
+|   |-- verify.sh            Pre-demo automated checks
+|   `-- failure-demo.sh      Failure scenario commands
+|-- docs/
+|   `-- submission-notes.md  Task completion status, checklist
+`-- evidence/
+    |-- 01-lan/              LAN connectivity proof
+    |-- 02-dns/              DNS resolution output
+    |-- 03-https/            TLS handshake verification
+    |-- 04-load-balancing/   Round-robin load balancing log
+    |-- 05-cache/            Cache-Control header demonstration
+    |-- 06-wireshark/        Wireshark captures and screenshots
+    `-- 07-failure/          Backend failure and failover evidence
+\end{lstlisting}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Summary}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{table}[h!]
+\centering
+\caption{Phase 1 task completion summary}
+\begin{tabular}{clll}
+\toprule
+\textbf{Task} & \textbf{Description} & \textbf{Status} & \textbf{Evidence} \\
+\midrule
+A & Establish Private LAN & \textcolor{nangreen}{\textbf{Complete}} & \texttt{evidence/01-lan/} \\
+B & Configure Private DNS & \textcolor{nangreen}{\textbf{Complete}} & \texttt{evidence/02-dns/} \\
+C & Build Two Backend Services & \textcolor{nangreen}{\textbf{Complete}} & \texttt{backends/} \\
+D & Nginx Reverse Proxy + Load Balancer & \textcolor{nangreen}{\textbf{Complete}} & \texttt{evidence/04-load-balancing/} \\
+E & HTTPS / TLS & \textcolor{nangreen}{\textbf{Complete}} & \texttt{evidence/03-https/} \\
+F & HTTP Caching & \textcolor{nangreen}{\textbf{Complete}} & \texttt{evidence/05-cache/} \\
+G & Complete Protocol Flow Capture & \textcolor{nangreen}{\textbf{Complete}} & \texttt{evidence/06-wireshark/} \\
+\midrule
+\multicolumn{2}{l}{Failure Scenarios} & \textcolor{nangreen}{\textbf{Complete}} & \texttt{evidence/07-failure/} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All Phase 1 mandatory tasks are complete. The NAN platform successfully demonstrates the full DNS $\rightarrow$ TCP $\rightarrow$ TLS $\rightarrow$ HTTP $\rightarrow$ Load Balancer $\rightarrow$ Backend stack on a private local network, with Wireshark evidence at every layer and controlled failure scenarios showing layer independence.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\vfill
+\begin{center}
+\textcolor{nangray}{\rule{0.5\linewidth}{0.4pt}}\\[0.5em]
+{\small \textcolor{nangray}{Team NAN $\cdot$ Computer Networks Phase 1 $\cdot$ October 2026}}\\
+{\small \textcolor{nangray}{Lakshya $\cdot$ Kushal $\cdot$ Chinmay $\cdot$ Prachee}}
+\end{center}
+
+\end{document}
