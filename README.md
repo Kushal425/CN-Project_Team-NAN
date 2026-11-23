@@ -2,17 +2,21 @@
 
 Team NAN built and evaluated a four-Mac private network for Computer Networks. Phase 1 established the LAN, DNS, trusted HTTPS, and load-balanced Python backends. Phase 2 added a backup resolver, backend isolation, and controlled migration to a standby edge.
 
+## Architecture mind map
+
+![Combined Phase 1 and Phase 2 architecture mind map](docs/NAN-Phase1-Phase2-Architecture-Mind-Map.png)
+
 ## Submission and live evaluation
 
 | Deliverable | Where to find it |
 |---|---|
 | Phase 2 final report | [Report PDF](docs/Phase2-Report.pdf) · [Editable source](docs/phase2-report.md) |
 | Final presentation | [Presentation PDF](docs/Phase2-Presentation.pdf) · [Editable PowerPoint](docs/Phase2-Presentation.pptx) |
-| Architecture | [Phase 2 topology and protocol flow](architecture/phase2-topology.md) |
+| Architecture | [Combined Phase 1 and Phase 2 mind map](docs/NAN-Phase1-Phase2-Architecture-Mind-Map.png) · [Phase 2 topology and protocol flow](architecture/phase2-topology.md) |
 | Configuration bundle | [Primary DNS](dns/dnsmasq.conf) · [Backup DNS](dns/backup-dnsmasq.conf) · [Primary nginx](nginx/nan.conf) · [Standby nginx](nginx/standby.conf) · [PF rules](firewall/) |
 | Startup and demonstration | [Phase 2 runbook](docs/phase2-runbook.md) · [TLS and certificate setup](tls/README.md) |
 | Phase 2 results | [Evidence index with screenshots, captures, and frame numbers](evidence/phase2/README.md) |
-| Phase 1 submission | [Report](docs/Report.pdf) · [Original topology](architecture/topology.md) · [Original request flow](architecture/request-flow.md) · [Submission notes](docs/submission-notes.md) |
+| Phase 1 submission | [Report](docs/Report.pdf) · [Original mind map](docs/NAN%20Private%20Network%20Architecture%20Mind%20Map.png) · [Original topology](architecture/topology.md) · [Original request flow](architecture/request-flow.md) · [Submission notes](docs/submission-notes.md) |
 
 ## Team and machine roles
 
