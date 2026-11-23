@@ -1,0 +1,2 @@
+pass in quick on en0 inet proto tcp from 10.7.2.51 to 10.7.2.53 port 3002 keep state
+block drop in quick on en0 inet proto tcp from any to 10.7.2.53 port 3002

@@ -1,0 +1,11 @@
+frame.number	frame.time_relative	ip.src	ip.dst	dns.flags.response	dns.qry.name	dns.resp.ttl	dns.a
+1	0.000000000	10.7.2.53	10.7.28.77	False	app.NAN.test		
+2	0.070339000	10.7.28.77	10.7.2.53	True	app.NAN.test	60	10.7.2.51
+3	155.564988000	10.7.2.53	10.7.28.77	False	app.NAN.test		
+4	155.702601000	10.7.28.77	10.7.2.53	True	app.NAN.test	60	10.7.2.53
+5	155.720020000	10.7.2.53	10.7.26.226	False	app.NAN.test		
+6	155.875868000	10.7.26.226	10.7.2.53	True	app.NAN.test	60	10.7.2.53
+7	155.888519000	10.7.2.53	10.7.28.77	False	api.NAN.test		
+8	155.931127000	10.7.28.77	10.7.2.53	True	api.NAN.test	60	10.7.2.51
+9	252.693448000	10.7.2.53	10.7.28.77	False	app.NAN.test		
+11	252.834111000	10.7.28.77	10.7.2.53	True	app.NAN.test	60	10.7.2.53

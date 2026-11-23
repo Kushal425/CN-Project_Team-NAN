@@ -58,7 +58,7 @@ DNS records:
 - app.NAN.test -> 10.7.29.219
 - api.NAN.test -> 10.7.29.219
 
-Configuration file: dns/dnsmasq.conf
+Configuration file: [Phase 1 dnsmasq](../dns/phase1/dnsmasq.conf)
 
 Evidence:
 - evidence/02-dns/dns-resolution.txt
@@ -85,7 +85,7 @@ Both backends bind to 0.0.0.0 so they are reachable from all machines on the LAN
 
 ## Task D — Nginx Reverse Proxy and Load Balancing
 
-Configuration: nginx/nan.conf
+Configuration: [Phase 1 nginx](../nginx/phase1/nan.conf)
 
 Nginx listens on port 443 (HTTPS) and port 8080 (HTTP fallback).
 

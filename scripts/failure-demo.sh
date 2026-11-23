@@ -1,37 +1,47 @@
 #!/usr/bin/env bash
-# NAN Phase 1 - Failure scenario demonstration script
-# Run during evaluation to demonstrate Phase 1 failure scenarios.
-# Usage: bash scripts/failure-demo.sh
+# Run from a demo client using the NAN resolver and public CA.
+set -euo pipefail
 
-BACKEND_A="10.7.20.70"
-BACKEND_B="10.7.0.210"
+mode=${1:-}
+ca_file=${2:-}
+if [[ "$mode" != both && "$mode" != b-only ]] || [[ ! -r "$ca_file" ]]; then
+    printf 'Usage: bash %s both|b-only /path/to/nan-ca.crt\n' "$0" >&2
+    exit 2
+fi
 
-echo "========================================"
-echo "  NAN Phase 1 — Failure Demonstrations"
-echo "========================================"
-echo ""
+url=${NAN_STATUS_URL:-https://app.NAN.test/api/status}
+expected_peer=${NAN_EXPECT_EDGE:-}
+count_a=0
+count_b=0
+for request in 1 2 3 4 5 6; do
+    response=$(curl --noproxy '*' --cacert "$ca_file" --connect-timeout 5 \
+        --max-time 10 --silent --show-error --fail --dump-header - \
+        --output /dev/null --write-out $'\nstatus=%{http_code} peer=%{remote_ip}\n' "$url")
+    status=$(printf '%s\n' "$response" | awk '/^status=/ { print $1 }')
+    peer=$(printf '%s\n' "$response" | awk '/^status=/ { sub(/^peer=/, "", $2); print $2 }')
+    backend=$(printf '%s\n' "$response" | awk '
+        tolower($1) == "x-backend:" { sub(/\r$/, "", $2); print $2 }
+    ')
+    printf 'Request %s: %s X-Backend: %s\n' "$request" \
+        "$(printf '%s\n' "$response" | awk '/^status=/ { print }')" "$backend"
+    if [[ "$status" != status=200 ]]; then
+        printf 'Expected status=200, got %s\n' "$status" >&2
+        exit 1
+    fi
+    if [[ -n "$expected_peer" && "$peer" != "$expected_peer" ]]; then
+        printf 'Expected edge %s, got %s\n' "$expected_peer" "$peer" >&2
+        exit 1
+    fi
+    case "$backend" in
+        A) count_a=$((count_a + 1)) ;;
+        B) count_b=$((count_b + 1)) ;;
+        *) printf 'Unexpected X-Backend value: %s\n' "$backend" >&2; exit 1 ;;
+    esac
+done
 
-echo "--- Scenario 1: Wrong destination port ---"
-echo "Attempting connection to app.NAN.test on port 9999 (should fail)"
-curl --max-time 5 -v http://10.7.29.219:9999/ 2>&1 | tail -5 || true
-echo ""
-
-echo "--- Scenario 2: DNS name resolution ---"
-echo "Resolving app.NAN.test via correct DNS server (10.7.3.114):"
-dig app.NAN.test @10.7.3.114 +short
-echo ""
-echo "Resolving app.NAN.test via public DNS (should fail to resolve):"
-dig app.NAN.test @8.8.8.8 +short || echo "(no answer - correct: public DNS does not know .NAN.test)"
-echo ""
-
-echo "--- Scenario 3: One backend down ---"
-echo "Stop Backend A on Chinmay's machine, then run:"
-echo "  for i in {1..6}; do curl -sk https://app.NAN.test/ -D- -o /dev/null | grep X-Backend; done"
-echo "All responses should show X-Backend: B only."
-echo ""
-
-echo "--- Scenario 4: Both backends down ---"
-echo "Stop both backends, then run:"
-echo "  curl -sv https://app.NAN.test/"
-echo "Expected: 502 Bad Gateway from nginx"
-echo ""
+printf 'A=%s B=%s\n' "$count_a" "$count_b"
+if [[ "$mode" == both ]]; then
+    [[ "$count_a" -gt 0 && "$count_b" -gt 0 ]]
+else
+    [[ "$count_a" -eq 0 && "$count_b" -eq 6 ]]
+fi

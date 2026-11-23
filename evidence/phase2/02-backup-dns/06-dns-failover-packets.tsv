@@ -1,0 +1,6 @@
+frame.number	frame.time_relative	ip.src	ip.dst	dns.flags.response	dns.qry.name	dns.resp.ttl	dns.a
+1	0.000000000	10.7.2.53	10.7.28.77	False	api.NAN.test		
+2	2.041893000	10.7.2.53	10.7.28.77	False	api.NAN.test		
+4	3.080454000	10.7.2.53	10.7.28.77	False	api.NAN.test		
+6	5.137601000	10.7.2.53	10.7.26.226	False	api.NAN.test		
+8	5.262604000	10.7.26.226	10.7.2.53	True	api.NAN.test	0	10.7.2.51

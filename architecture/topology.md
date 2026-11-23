@@ -1,4 +1,6 @@
-# NAN - Network Topology
+# NAN - Phase 1 Network Topology
+
+This is the October submission topology. See the [Phase 2 topology](phase2-topology.md) for the November LAN, backup resolver, and standby edge.
 
 ## Overview
 

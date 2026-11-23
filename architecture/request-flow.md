@@ -1,5 +1,7 @@
 # NAN — Request Flow (Phase 1)
 
+For the additional DNS and HTTPS paths introduced in November, see the [Phase 2 request flow](phase2-topology.md).
+
 ## Overview
 
 This document traces the complete journey of a single client request through the NAN network stack, from DNS resolution to backend response. Every protocol layer is mapped to the OSI/TCP-IP model.

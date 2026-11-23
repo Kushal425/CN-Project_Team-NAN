@@ -1,96 +1,34 @@
 #!/usr/bin/env bash
-# NAN Phase 1 - Demo verification script
-# Run this before the evaluation to confirm all services are reachable.
-# Usage: bash scripts/verify.sh
-
+# Verify the normal Phase 2 baseline from a demo client.
 set -euo pipefail
 
-DNS_SERVER="10.7.3.114"
-GATEWAY_IP="10.7.29.219"
-BACKEND_A="10.7.20.70"
-BACKEND_B="10.7.0.210"
+ca_file=${1:-}
+if [[ ! -r "$ca_file" ]]; then
+    printf 'Usage: bash %s /path/to/nan-ca.crt\n' "$0" >&2
+    exit 2
+fi
 
-PASS=0
-FAIL=0
+primary_dns=${NAN_PRIMARY_DNS:-10.7.28.77}
+backup_dns=${NAN_BACKUP_DNS:-10.7.26.226}
+primary_edge=${NAN_PRIMARY_EDGE:-10.7.2.51}
 
-check() {
-    local label="$1"
-    local result="$2"
-    local expected="$3"
-    if echo "$result" | grep -q "$expected"; then
-        echo "[PASS] $label"
-        ((PASS++)) || true
-    else
-        echo "[FAIL] $label"
-        echo "       Expected: $expected"
-        echo "       Got:      $result"
-        ((FAIL++)) || true
-    fi
-}
-
-echo "========================================="
-echo "  NAN Phase 1 — Pre-Demo Verification"
-echo "========================================="
-echo ""
-
-# DNS checks
-echo "--- DNS ---"
-result=$(dig app.NAN.test @"$DNS_SERVER" +short 2>/dev/null || echo "FAILED")
-check "app.NAN.test resolves to $GATEWAY_IP" "$result" "$GATEWAY_IP"
-
-result=$(dig api.NAN.test @"$DNS_SERVER" +short 2>/dev/null || echo "FAILED")
-check "api.NAN.test resolves to $GATEWAY_IP" "$result" "$GATEWAY_IP"
-
-echo ""
-
-# Backend direct access
-echo "--- Direct Backend Access ---"
-result=$(curl -si --max-time 5 "http://$BACKEND_A:3001/api/status" 2>/dev/null || echo "FAILED")
-check "Backend A reachable at $BACKEND_A:3001" "$result" "X-Backend: A"
-
-result=$(curl -si --max-time 5 "http://$BACKEND_B:3002/api/status" 2>/dev/null || echo "FAILED")
-check "Backend B reachable at $BACKEND_B:3002" "$result" "X-Backend: B"
-
-echo ""
-
-# HTTPS via nginx (requires CA in trust store, no -k)
-echo "--- HTTPS through Nginx ---"
-result=$(curl -s --max-time 10 -w "%{http_code}" -o /dev/null "https://app.NAN.test/" 2>/dev/null || echo "FAILED")
-check "HTTPS app.NAN.test returns 200" "$result" "200"
-
-result=$(curl -s --max-time 10 -w "%{http_code}" -o /dev/null "https://api.NAN.test/api/status" 2>/dev/null || echo "FAILED")
-check "HTTPS api.NAN.test/api/status returns 200" "$result" "200"
-
-echo ""
-
-# Load balancing check (look for both A and B in 10 requests)
-echo "--- Load Balancing ---"
-BACKENDS_SEEN=""
-for i in $(seq 1 10); do
-    backend=$(curl -sk --max-time 5 -D - -o /dev/null "https://app.NAN.test/" 2>/dev/null | grep "X-Backend" | tr -d '\r\n' || echo "")
-    BACKENDS_SEEN="$BACKENDS_SEEN $backend"
+for resolver in "$primary_dns" "$backup_dns"; do
+    for name in app.NAN.test api.NAN.test; do
+        answer=$(dig "@$resolver" "$name" A +short +time=2 +tries=1)
+        if [[ "$answer" != "$primary_edge" ]]; then
+            printf 'DNS failure: %s at %s returned %s (expected %s)\n' \
+                "$name" "$resolver" "${answer:-no answer}" "$primary_edge" >&2
+            exit 1
+        fi
+        printf 'DNS: %s via %s = %s\n' "$name" "$resolver" "$answer"
+    done
 done
 
-if echo "$BACKENDS_SEEN" | grep -q "A" && echo "$BACKENDS_SEEN" | grep -q "B"; then
-    echo "[PASS] Round-robin: both Backend A and Backend B responded"
-    ((PASS++)) || true
-else
-    echo "[FAIL] Round-robin: did not see both backends in 10 requests"
-    echo "       Saw: $BACKENDS_SEEN"
-    ((FAIL++)) || true
-fi
+api_response=$(curl --noproxy '*' --cacert "$ca_file" --max-time 10 \
+    --silent --show-error --fail --dump-header - --output /dev/null \
+    --write-out $'\npeer=%{remote_ip}\n' https://api.NAN.test/api/status)
+printf '%s\n' "$api_response" | tr -d '\r' | grep -F -x "peer=$primary_edge"
+printf '%s\n' "$api_response" | tr -d '\r' | grep -E -i '^Cache-Control: .*max-age=60'
 
-echo ""
-
-# Cache-Control header
-echo "--- Cache-Control ---"
-result=$(curl -sI --max-time 10 "https://api.NAN.test/api/status" 2>/dev/null || echo "FAILED")
-check "Cache-Control: max-age=60 present" "$result" "max-age=60"
-
-echo ""
-echo "========================================="
-echo "  Results: $PASS passed, $FAIL failed"
-echo "========================================="
-if [ "$FAIL" -gt 0 ]; then
-    exit 1
-fi
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+NAN_EXPECT_EDGE="$primary_edge" bash "$script_dir/failure-demo.sh" both "$ca_file"
